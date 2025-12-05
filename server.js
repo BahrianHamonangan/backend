@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const db = require('./models/db'); // Pastikan koneksi DB dipanggil
+const db = require('./models/db');
 const authRoutes = require('./routes/auth');
 const bookmarkRoutes = require('./routes/bookmark');
 
@@ -12,16 +12,18 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 
-// 🔥 Tambahkan health check agar Railway mendeteksi server OK
-app.get("/", (req, res) => {
-  res.send("🚀 Komik Bookmark API aktif dan berjalan!");
+// === HEALTH CHECK WAJIB UNTUK RAILWAY ===
+app.get('/', (req, res) => {
+  res.status(200).send("🚀 Komik Bookmark API berjalan!");
 });
 
-// Setup Routes
+// Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 
+// === PORT FIX UNTUK RAILWAY ===
 const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
-  console.log(`✅ Backend jalan di http://localhost:${PORT}`);
+  console.log(`🚀 Server berjalan pada port ${PORT}`);
 });
