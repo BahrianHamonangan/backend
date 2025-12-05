@@ -1,26 +1,27 @@
-const express = require("express");
-const cors = require("cors");
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+const db = require('./models/db'); // Pastikan koneksi DB dipanggil
+const authRoutes = require('./routes/auth');
+const bookmarkRoutes = require('./routes/bookmark');
+
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({ origin: '*' }));
+app.use(bodyParser.json());
 
-// SQLite (kalau ada)
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./database.db", (err) => {
-  if (err) console.error(err);
-  else console.log("✅ Terkoneksi ke SQLite database.");
-});
-
-// ROUTE TEST
+// 🔥 Tambahkan health check agar Railway mendeteksi server OK
 app.get("/", (req, res) => {
-  res.send("Backend Railway OK 🚀");
+  res.send("🚀 Komik Bookmark API aktif dan berjalan!");
 });
 
-// WAJIB! Port dari Railway
-const PORT = process.env.PORT || 8080;
+// Setup Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
 
-// WAJIB! Gunakan 0.0.0.0
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server berjalan di port ${PORT}`);
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`✅ Backend jalan di http://localhost:${PORT}`);
 });
