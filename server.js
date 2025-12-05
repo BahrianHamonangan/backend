@@ -16,7 +16,14 @@ app.use(bodyParser.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`✅ Backend jalan di http://localhost:${PORT}`);
+// ROUTES
+app.get("/", (req, res) => {
+  res.send("Backend berjalan OK di Railway 🚀");
+});
+
+// PORT Railway
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server berjalan di port ${PORT}`);
 });
