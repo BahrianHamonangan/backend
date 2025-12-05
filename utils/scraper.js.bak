@@ -1,0 +1,39 @@
+const cheerio = require('cheerio');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+async function scrapeKomiku(url) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+        'Accept-Language': 'en-US,en;q=0.9'
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const body = await response.text();
+    const $ = cheerio.load(body);
+
+    let title = $('meta[property="og:title"]').attr('content')
+      || $('meta[name="twitter:title"]').attr('content')
+      || $('h1').first().text()?.trim()
+      || $('.post-title').first().text()?.trim()
+      || $('.entry-title').first().text()?.trim()
+      || $('.detail-info-right h1').first().text()?.trim()
+      || 'Judul Tidak Ditemukan';
+
+    let coverUrl = $('meta[property="og:image"]').attr('content')
+      || $('meta[name="twitter:image"]').attr('content')
+      || $('.summary_image img').first().attr('src')
+      || $('.thumb img').first().attr('src')
+      || $('.post img').first().attr('src')
+      || 'https://placehold.co/200x300?text=No+Image';
+
+    return { title, coverUrl };
+
+  } catch (e) {
+    console.error('Scrape error:', e.message);
+    throw new Error(`Gagal memproses URL: ${e.message}`);
+  }
+}
+
+module.exports = { scrapeKomiku };
