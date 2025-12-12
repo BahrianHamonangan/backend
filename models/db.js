@@ -1,14 +1,19 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-// Pastikan file ini menunjuk ke bookmark.db
-const dbPath = path.resolve(__dirname, '../bookmark.db');
+// ✅ PATH YANG AMAN UNTUK RAILWAY
+const dbPath = path.join(process.cwd(), 'bookmark.db');
+console.log('Database path:', dbPath); // Untuk debugging
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('❌ Gagal koneksi ke database:', err.message);
+    // Coba buat direktori jika belum ada
+    const fs = require('fs');
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   } else {
-    console.log('✅ Terkoneksi ke SQLite database.');
+    console.log('✅ Terkoneksi ke SQLite database di path:', dbPath);
   }
 });
 
